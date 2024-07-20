@@ -1,9 +1,9 @@
 import 'package:country_currency_pickers/country.dart';
 import 'package:country_currency_pickers/country_pickers.dart';
-import 'package:country_currency_pickers/utils/utils.dart';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
+import 'package:whatsapp_clone/features/user/presentation/pages/otp_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,9 +13,16 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController _phoneController = TextEditingController();
   static Country _selectedFilterDialogCountry =
       CountryPickerUtils.getCountryByPhoneCode("20");
-  String? _countryCode = _selectedFilterDialogCountry.phoneCode;
+  // String? _countryCode = _selectedFilterDialogCountry.phoneCode;
+  @override
+  void dispose() {
+    _phoneController.clear();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,8 +70,11 @@ class _LoginPageState extends State<LoginPage> {
                   child: Container(
                     decoration: const BoxDecoration(
                         border: Border(bottom: BorderSide(color: tabColor))),
-                    child: const TextField(
-                      decoration: InputDecoration(border: InputBorder.none),
+                    child: TextField(
+                      controller: _phoneController,
+                      style: TextStyle(color: whiteColor),
+                      decoration:
+                          const InputDecoration(border: InputBorder.none),
                     ),
                   ),
                 )
@@ -73,13 +83,13 @@ class _LoginPageState extends State<LoginPage> {
             Expanded(child: Container()),
             GestureDetector(
               onTap: () {
-                // Navigator.pushAndRemoveUntil(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => LoginPage(),
-                //   ),
-                //   (route) => false,
-                // );
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OtpPage(),
+                  ),
+                  (route) => false,
+                );
               },
               child: Container(
                 color: messageColor,
@@ -108,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (_) => Theme(
             data: Theme.of(context).copyWith(
-              primaryColor: tabColor,
+              primaryColor: Colors.greenAccent,
             ),
             child: CountryPickerDialog(
               titlePadding: const EdgeInsets.all(8.0),

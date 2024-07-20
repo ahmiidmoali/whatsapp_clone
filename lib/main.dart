@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'features/splash/splash_screen.dart';
+import 'features/app/splash/splash_screen.dart';
 import 'features/app/theme/style.dart';
 
 void main() {
@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
