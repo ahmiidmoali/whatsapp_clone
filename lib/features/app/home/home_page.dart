@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:whatsapp_clone/features/app/const/page_const.dart';
+import 'package:whatsapp_clone/features/app/home/contact_page.dart';
+import 'package:whatsapp_clone/features/app/settings/settings_page.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
+import 'package:whatsapp_clone/features/call/presentation/pages/call_history_page.dart';
+import 'package:whatsapp_clone/features/chat/presentation/pages/chat_page.dart';
+import 'package:whatsapp_clone/features/status/presentation/pages/status_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -35,12 +41,38 @@ class _HomePageState extends State<HomePage>
           "WhatsApp",
           style: TextStyle(color: greyColor),
         ),
-        actions: const [
-          Icon(Icons.camera_alt_outlined),
-          SizedBox(
+        actions: [
+          const Icon(Icons.camera_alt_outlined, color: greyColor),
+          const SizedBox(
             width: 20,
           ),
-          Icon(Icons.search_outlined)
+          const Icon(
+            Icons.search_outlined,
+            color: greyColor,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          PopupMenuButton(
+            color: appBarColor,
+            icon: const Icon(Icons.more_vert, color: greyColor),
+            onSelected: (value) {},
+            itemBuilder: (context) => <PopupMenuEntry<String>>[
+              PopupMenuItem(
+                  value: "Settings",
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const SettingsPage(),
+                      ));
+                    },
+                    child: const Text(
+                      "Settings",
+                      style: TextStyle(color: whiteColor),
+                    ),
+                  ))
+            ],
+          ),
         ],
         bottom: TabBar(
             indicatorSize: TabBarIndicatorSize.tab,
@@ -73,26 +105,7 @@ class _HomePageState extends State<HomePage>
           switchfloatingActionButtonOnTabIndex(_currentTabIndex),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          Center(
-            child: Text(
-              "chats",
-              style: TextStyle(color: whiteColor),
-            ),
-          ),
-          Center(
-            child: Text(
-              "status",
-              style: TextStyle(color: whiteColor),
-            ),
-          ),
-          Center(
-            child: Text(
-              "calls",
-              style: TextStyle(color: whiteColor),
-            ),
-          )
-        ],
+        children: const [ChatPage(), StatusPage(), CallHistoryPage()],
       ),
     );
   }
@@ -103,7 +116,11 @@ class _HomePageState extends State<HomePage>
         {
           return FloatingActionButton(
             backgroundColor: tabColor,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const ContactPage(),
+              ));
+            },
             child: const Icon(Icons.message_rounded),
           );
         }

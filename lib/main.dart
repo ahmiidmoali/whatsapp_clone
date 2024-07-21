@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whatsapp_clone/routes/on_generate_routes.dart';
 
 import 'features/app/splash/splash_screen.dart';
 import 'features/app/theme/style.dart';
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: backgroundColor,
           dialogBackgroundColor: appBarColor,
           appBarTheme: const AppBarTheme(color: appBarColor)),
-      home: const SplashScreen(),
+      initialRoute: "/",
+      onGenerateRoute: OnGenerateRoute.route,
     );
   }
 }
