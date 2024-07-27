@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/features/app/const/page_const.dart';
 import 'package:whatsapp_clone/features/app/home/contact_page.dart';
+import 'package:whatsapp_clone/features/app/home/home_page.dart';
 import 'package:whatsapp_clone/features/app/welcome/welcome_page.dart';
 
 class OnGenerateRoute {
@@ -10,7 +11,7 @@ class OnGenerateRoute {
     switch (name) {
       case PageConst.welcomePage:
         {
-          return materialPageBuilder(const WelcomePage());
+          return materialPageBuilder(const HomePage());
         }
       case PageConst.contactUsersPage:
         {

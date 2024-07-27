@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/features/app/global/data/date_formats.dart';
 import 'package:whatsapp_clone/features/app/global/widgets/profile_widget.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 
 class MyStatusPage extends StatelessWidget {
   const MyStatusPage({super.key});
@@ -18,7 +19,7 @@ class MyStatusPage extends StatelessWidget {
               Icons.arrow_back,
               color: greyColor,
             )),
-        title: Text(
+        title: const Text(
           "My Status",
           style: TextStyle(
               color: whiteColor, fontSize: 16, fontWeight: FontWeight.w500),
@@ -37,12 +38,13 @@ class MyStatusPage extends StatelessWidget {
                     child: profileWidget(),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 Expanded(
                   child: Text(
-                    formatDateTime(DateTime.now()),
+                    GetTimeAgo.parse(
+                        DateTime.now().subtract(const Duration(minutes: 5))),
                     style: const TextStyle(
                         color: greyColor,
                         fontSize: 12,

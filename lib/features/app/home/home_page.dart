@@ -3,6 +3,7 @@ import 'package:whatsapp_clone/features/app/const/page_const.dart';
 import 'package:whatsapp_clone/features/app/home/contact_page.dart';
 import 'package:whatsapp_clone/features/app/settings/settings_page.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
+import 'package:whatsapp_clone/features/call/presentation/pages/call_constants_page.dart';
 import 'package:whatsapp_clone/features/call/presentation/pages/call_history_page.dart';
 import 'package:whatsapp_clone/features/chat/presentation/pages/chat_page.dart';
 import 'package:whatsapp_clone/features/status/presentation/pages/status_page.dart';
@@ -136,7 +137,11 @@ class _HomePageState extends State<HomePage>
         {
           return FloatingActionButton(
             backgroundColor: tabColor,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const CallConstantsPage(),
+              ));
+            },
             child: const Icon(Icons.call_outlined),
           );
         }
