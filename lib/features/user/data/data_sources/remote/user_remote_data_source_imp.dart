@@ -21,16 +21,19 @@ class UserRemoteDataSourceImp extends UserRemoteDataSource {
   @override
   Future<void> createUser(UserEntity user) async {
     final userCollection = firestore.collection(FirebaseCollectionConst.users);
+
     final uid = await getCurrentUID();
+
     final newUser = UserModel(
-      username: user.username,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      isOnline: user.isOnline,
-      uid: uid,
-      profileUrl: user.profileUrl,
-      status: user.status,
-    ).toDocument();
+            email: user.email,
+            uid: uid,
+            isOnline: user.isOnline,
+            phoneNumber: user.phoneNumber,
+            username: user.username,
+            profileUrl: user.profileUrl,
+            status: user.status)
+        .toDocument();
+
     try {
       userCollection.doc(uid).get().then((userDoc) {
         if (!userDoc.exists) {
@@ -126,29 +129,33 @@ class UserRemoteDataSourceImp extends UserRemoteDataSource {
 
   @override
   Future<void> verifyPhoneNumber(String phoneNumber) async {
-    verificationCompleted(AuthCredential authCredential) {
+    phoneVerificationCompleted(AuthCredential authCredential) {
       print(
-          " phone verified : ${authCredential.accessToken} , ${authCredential.signInMethod}");
+          "phone verified : Token ${authCredential.token} ${authCredential.signInMethod}");
     }
 
-    verificationFailed(FirebaseAuthException firebaseAuthException) {
+    phoneVerificationFailed(FirebaseAuthException firebaseAuthException) {
       print(
-          " phone failed : ${firebaseAuthException.message} , ${firebaseAuthException.code}");
+        "phone failed : ${firebaseAuthException.message},${firebaseAuthException.code}",
+      );
     }
 
-    codeSent(String verificationId, int? forceResendingToken) {
+    phoneCodeAutoRetrievalTimeout(String verificationId) {
       _verificationId = verificationId;
+      print("time out :$verificationId");
     }
 
-    codeAutoRetrievalTimeout(String verificationId) {
+    phoneCodeSent(String verificationId, int? forceResendingToken) {
       _verificationId = verificationId;
-      print(" time out : $verificationId ");
     }
 
     await auth.verifyPhoneNumber(
-        verificationCompleted: verificationCompleted,
-        verificationFailed: verificationFailed,
-        codeSent: codeSent,
-        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
+      phoneNumber: phoneNumber,
+      verificationCompleted: phoneVerificationCompleted,
+      verificationFailed: phoneVerificationFailed,
+      timeout: const Duration(seconds: 60),
+      codeSent: phoneCodeSent,
+      codeAutoRetrievalTimeout: phoneCodeAutoRetrievalTimeout,
+    );
   }
 }

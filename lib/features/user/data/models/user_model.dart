@@ -1,8 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:whatsapp_clone/features/user/domain/entities/user_entitiy.dart';
 
 class UserModel extends UserEntity {
@@ -13,6 +9,7 @@ class UserModel extends UserEntity {
   final String? uid;
   final String? status;
   final String? profileUrl;
+
   const UserModel({
     this.username,
     this.email,
@@ -24,11 +21,12 @@ class UserModel extends UserEntity {
   }) : super(
             username: username,
             email: email,
+            uid: uid,
+            profileUrl: profileUrl,
             phoneNumber: phoneNumber,
             isOnline: isOnline,
-            uid: uid,
-            status: status,
-            profileUrl: profileUrl);
+            status: status);
+
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
     final snap = snapshot.data() as Map<String, dynamic>;
 
@@ -41,6 +39,7 @@ class UserModel extends UserEntity {
         username: snap['username'],
         uid: snap['uid']);
   }
+
   Map<String, dynamic> toDocument() => {
         "status": status,
         "profileUrl": profileUrl,

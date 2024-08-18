@@ -1,8 +1,15 @@
+import 'package:agora_uikit/models/rtm_message.dart';
 import 'package:country_currency_pickers/country.dart';
 import 'package:country_currency_pickers/country_pickers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:whatsapp_clone/features/app/const/app_const.dart';
+import 'package:whatsapp_clone/features/app/home/home_page.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
+import 'package:whatsapp_clone/features/user/presentation/cubit/auth/cubit/auth_cubit.dart';
+import 'package:whatsapp_clone/features/user/presentation/cubit/credential/cubit/credential_cubit.dart';
+import 'package:whatsapp_clone/features/user/presentation/pages/inital_profile_submit_page.dart';
 import 'package:whatsapp_clone/features/user/presentation/pages/otp_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _phoneController = TextEditingController();
   static Country _selectedFilterDialogCountry =
       CountryPickerUtils.getCountryByPhoneCode("20");
-  // String? _countryCode = _selectedFilterDialogCountry.phoneCode;
+  String _phoneNumber = "";
   @override
   void dispose() {
     _phoneController.clear();
@@ -25,6 +32,47 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<CredentialCubit, CredentialState>(
+      listener: (context, state) {
+        if (state is CredentialSuccess) {
+          BlocProvider.of<AuthCubit>(context).loggedIn();
+        }
+        if (state is CredentialFailure) {
+          toast("Something went wrong");
+        }
+      },
+      builder: (context, state) {
+        if (state is CredentialLoading) {
+          return const CircularProgressIndicator(
+            color: tabColor,
+          );
+        }
+        if (state is CredentialPhoneAuthSmsCodeReceived) {
+          return const OtpPage();
+        }
+        if (state is CredentialPhoneAuthProfileInfo) {
+          return InitialProfileSubmitPage(
+            phoneNumber: _phoneNumber,
+          );
+        }
+        if (state is CredentialSuccess) {
+          return BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, state) {
+              if (state is Authenticated) {
+                return HomePage(
+                  uid: state.uid,
+                );
+              }
+              return _bodyWidget();
+            },
+          );
+        }
+        return _bodyWidget();
+      },
+    );
+  }
+
+  _bodyWidget() {
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.only(top: 30, bottom: 10),
@@ -82,15 +130,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Expanded(child: Container()),
             GestureDetector(
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OtpPage(),
-                  ),
-                  (route) => false,
-                );
-              },
+              onTap: _submitVerifyPhoneNumber,
               child: Container(
                 color: messageColor,
                 padding: const EdgeInsets.all(5),
@@ -139,6 +179,18 @@ class _LoginPageState extends State<LoginPage> {
               },
               itemBuilder: _buildDialogItem,
             )));
+  }
+
+  void _submitVerifyPhoneNumber() {
+    if (_phoneController.text.isNotEmpty) {
+      _phoneNumber =
+          "+${_selectedFilterDialogCountry.phoneCode}${_phoneController.text}";
+      BlocProvider.of<CredentialCubit>(context)
+          .submitVerifyPhoneNumber(phoneNumber: _phoneNumber);
+      print("$_phoneNumber");
+    } else {
+      toast("Enter your phone number");
+    }
   }
 
   Widget _buildDialogItem(Country country) {

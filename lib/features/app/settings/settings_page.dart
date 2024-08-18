@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:whatsapp_clone/features/app/const/page_const.dart';
 import 'package:whatsapp_clone/features/app/global/widgets/profile_widget.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
+import 'package:whatsapp_clone/features/user/presentation/cubit/get_single_user/cubit/get_single_user_cubit.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+class SettingsPage extends StatefulWidget {
+  final String uid;
+  const SettingsPage({super.key, required this.uid});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  @override
+  void initState() {
+    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,34 +34,33 @@ class SettingsPage extends StatelessWidget {
               )),
           title: const Text(
             "Settings",
-            style: const TextStyle(
+            style: TextStyle(
                 color: whiteColor, fontSize: 20, fontWeight: FontWeight.w500),
           ),
         ),
         body: Column(
           children: [
-            ListTile(
-              leading: SizedBox(
-                height: 60,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(60),
-                  child: profileWidget(),
-                ),
-              ),
-              title: const Text(
-                "Username",
-                style: TextStyle(
-                    color: whiteColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500),
-              ),
-              subtitle: const Text(
-                "hey there!i'm using whatsapp ",
-                style: TextStyle(
-                    color: greyColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500),
-              ),
+            BlocBuilder<GetSingleUserCubit, GetSingleUserState>(
+              builder: (context, state) {
+                if (state is GetSingleUserLoaded) {
+                  final singleUser = state.singleUser;
+                  return SettingsProfileInfo(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(PageConst.editProfilePage,
+                          arguments: singleUser);
+                    },
+                    username: singleUser.username!,
+                    status: singleUser.status!,
+                    url: singleUser.profileUrl!,
+                  );
+                } else {
+                  return const SettingsProfileInfo(
+                    username: "...",
+                    status: "...",
+                    url: "",
+                  );
+                }
+              },
             ),
             const Divider(
               thickness: .3,
@@ -78,6 +92,46 @@ class SettingsPage extends StatelessWidget {
             )
           ],
         ));
+  }
+}
+
+class SettingsProfileInfo extends StatelessWidget {
+  final String username;
+  final String status;
+  final String url;
+  final void Function()? onTap;
+  const SettingsProfileInfo({
+    super.key,
+    required this.username,
+    required this.status,
+    required this.url,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: ListTile(
+        leading: SizedBox(
+          height: 60,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(60),
+            child: profileWidget(imageUrl: url),
+          ),
+        ),
+        title: Text(
+          username,
+          style: const TextStyle(
+              color: whiteColor, fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        subtitle: Text(
+          status,
+          style: const TextStyle(
+              color: greyColor, fontSize: 12, fontWeight: FontWeight.w500),
+        ),
+      ),
+    );
   }
 }
 
