@@ -120,6 +120,9 @@ class UserRemoteDataSourceImp extends UserRemoteDataSource {
     if (user.username != null && user.username != "") {
       userInfo["username"] = user.username;
     }
+    if (user.status != null && user.status != "") {
+      userInfo["status"] = user.status;
+    }
     if (user.profileUrl != null && user.profileUrl != "") {
       userInfo["profileUrl"] = user.profileUrl;
     }
