@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whatsapp_clone/features/app/const/page_const.dart';
+import 'package:whatsapp_clone/features/app/global/widgets/dialog_widget.dart';
 import 'package:whatsapp_clone/features/app/global/widgets/profile_widget.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
+import 'package:whatsapp_clone/features/user/presentation/cubit/auth/cubit/auth_cubit.dart';
 import 'package:whatsapp_clone/features/user/presentation/cubit/get_single_user/cubit/get_single_user_cubit.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -86,7 +88,20 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             SettingsListileField(
               icon: Icons.logout,
-              onTap: () {},
+              onTap: () {
+                displayAlertDialog(
+                  context,
+                  confirmTitle: "Logout",
+                  content: "Are you sure you want to logout?",
+                  onTap: () {
+                    BlocProvider.of<AuthCubit>(context).loggedOut();
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      PageConst.welcomePage,
+                      (route) => false,
+                    );
+                  },
+                );
+              },
               title: "Logout",
               subtitle: "Logout from WhatsApp Clone",
             )
@@ -115,6 +130,7 @@ class SettingsProfileInfo extends StatelessWidget {
       child: ListTile(
         leading: SizedBox(
           height: 60,
+          width: 60,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(60),
             child: profileWidget(imageUrl: url),
