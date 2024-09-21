@@ -1,6 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
-
 import 'package:whatsapp_clone/features/chat/data/data_sources/chat_remote_data_source.dart';
 import 'package:whatsapp_clone/features/chat/domain/entities/chat_entity.dart';
 import 'package:whatsapp_clone/features/chat/domain/entities/message_entity.dart';

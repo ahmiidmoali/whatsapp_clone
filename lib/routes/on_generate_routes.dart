@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/features/app/const/page_const.dart';
 import 'package:whatsapp_clone/features/app/home/contact_page.dart';
-import 'package:whatsapp_clone/features/app/home/home_page.dart';
 import 'package:whatsapp_clone/features/app/settings/settings_page.dart';
 import 'package:whatsapp_clone/features/app/splash/splash_screen.dart';
-import 'package:whatsapp_clone/features/app/welcome/welcome_page.dart';
 import 'package:whatsapp_clone/features/user/domain/entities/user_entitiy.dart';
 import 'package:whatsapp_clone/features/user/presentation/pages/edit_profile_page.dart';
 
@@ -19,7 +17,13 @@ class OnGenerateRoute {
         }
       case PageConst.contactUsersPage:
         {
-          return materialPageBuilder(const ContactPage());
+          if (args is String) {
+            return materialPageBuilder(ContactPage(
+              uid: args,
+            ));
+          } else {
+            return materialPageBuilder(const ErrorPage());
+          }
         }
 
       case PageConst.settingsPage:
@@ -39,6 +43,7 @@ class OnGenerateRoute {
           }
         }
     }
+    return materialPageBuilder(const ErrorPage());
   }
 }
 
@@ -53,9 +58,9 @@ class ErrorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Error"),
+        title: const Text("Error"),
       ),
-      body: Center(
+      body: const Center(
         child: Text("Error"),
       ),
     );

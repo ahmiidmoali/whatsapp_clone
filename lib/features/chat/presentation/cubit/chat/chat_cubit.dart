@@ -17,6 +17,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   Future<void> getMyChat({required ChatEntity chat}) async {
     try {
+      emit(ChatLoading());
       final streamResponse = getMyChatUsecase.call(chat);
       streamResponse.listen(
         (chatContacts) {

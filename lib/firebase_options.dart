@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'whatsapp-clone-app-7519b.appspot.com',
     iosBundleId: 'com.example.whatsappClone',
   );
+
 }

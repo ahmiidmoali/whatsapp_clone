@@ -118,9 +118,8 @@ class _HomePageState extends State<HomePage>
           return FloatingActionButton(
             backgroundColor: tabColor,
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const ContactPage(),
-              ));
+              Navigator.of(context)
+                  .pushNamed(PageConst.contactUsersPage, arguments: widget.uid);
             },
             child: const Icon(Icons.message_rounded),
           );
