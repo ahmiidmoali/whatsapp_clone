@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:whatsapp_clone/features/app/const/page_const.dart';
 import 'package:whatsapp_clone/features/app/global/widgets/profile_widget.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
+import 'package:whatsapp_clone/features/chat/domain/entities/message_entity.dart';
 import 'package:whatsapp_clone/features/user/presentation/cubit/get_device_number/cubit/get_device_number_cubit.dart';
+import 'package:whatsapp_clone/features/user/presentation/cubit/get_single_user/cubit/get_single_user_cubit.dart';
 import 'package:whatsapp_clone/features/user/presentation/cubit/user/cubit/user_cubit.dart';
 
 class ContactPage extends StatefulWidget {
@@ -19,6 +22,7 @@ class _ContactPageState extends State<ContactPage> {
   void initState() {
     // BlocProvider.of<GetDeviceNumberCubit>(context).getDeviceNumber();
     BlocProvider.of<UserCubit>(context).getAllUsers();
+    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
     super.initState();
   }
 
@@ -40,58 +44,80 @@ class _ContactPageState extends State<ContactPage> {
                 color: greyColor,
               )),
         ),
-        body: BlocBuilder<UserCubit, UserState>(
+        body: BlocBuilder<GetSingleUserCubit, GetSingleUserState>(
           builder: (context, state) {
-            if (state is UserLoaded) {
-              final users = state.user
-                  .where(
-                    (user) => user.uid != widget.uid,
-                  )
-                  .toList();
-              if (users.isEmpty) {
-                return const Center(
-                  child: Text(
-                    "there is no contacts ",
-                    style: TextStyle(color: whiteColor),
-                  ),
-                );
-              }
-              return ListView.builder(
-                  itemCount: users.length,
-                  itemBuilder: (context, index) {
-                    final user = users[index];
-                    return GestureDetector(
-                      onTap: () {
-                        // Navigator.of(context).
-                      },
-                      child: ListTile(
-                        leading: SizedBox(
-                          height: 60,
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(60),
-                              child: profileWidget(imageUrl: user.profileUrl)),
+            if (state is GetSingleUserLoaded) {
+              final currentUser = state.singleUser;
+              return BlocBuilder<UserCubit, UserState>(
+                builder: (context, state) {
+                  if (state is UserLoaded) {
+                    final users = state.user
+                        .where(
+                          (user) => user.uid != widget.uid,
+                        )
+                        .toList();
+                    if (users.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "there is no contacts ",
+                          style: TextStyle(color: whiteColor),
                         ),
-                        title: Text(
-                          "${user.username} ",
-                          style: const TextStyle(
-                              color: whiteColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
-                        ),
-                        subtitle: Text(
-                          "${user.status} ",
-                          style: const TextStyle(
-                              color: greyColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    );
-                  });
+                      );
+                    }
+                    return ListView.builder(
+                        itemCount: users.length,
+                        itemBuilder: (context, index) {
+                          final user = users[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                  PageConst.singleChatPage,
+                                  arguments: MessageEntity(
+                                      senderUid: currentUser.uid,
+                                      recipientUid: user.uid,
+                                      senderName: currentUser.username,
+                                      recipientName: user.username,
+                                      senderProfile: currentUser.profileUrl,
+                                      recipientProfile: user.profileUrl));
+                            },
+                            child: ListTile(
+                              leading: SizedBox(
+                                height: 60,
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(60),
+                                    child: profileWidget(
+                                        imageUrl: user.profileUrl)),
+                              ),
+                              title: Text(
+                                "${user.username} ",
+                                style: const TextStyle(
+                                    color: whiteColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              subtitle: Text(
+                                "${user.status} ",
+                                style: const TextStyle(
+                                    color: greyColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          );
+                        });
+                  }
+                  return const CircularProgressIndicator(
+                    color: tabColor,
+                  );
+                },
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: tabColor,
+                ),
+              );
             }
-            return const CircularProgressIndicator(
-              color: tabColor,
-            );
           },
         ));
   }

@@ -169,6 +169,7 @@ class ChatRemoteDataSourceImp extends ChatRemoteDataSource {
         .doc(message.recipientUid)
         .collection(FirebaseCollectionConst.messages)
         .orderBy("createdAt", descending: false);
+
     return myMessageRef.snapshots().map((querySnapshots) =>
         querySnapshots.docs.map((e) => MessageModel.fromSnapshot(e)).toList());
   }

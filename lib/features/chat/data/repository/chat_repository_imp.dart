@@ -22,7 +22,8 @@ class ChatRepositoryImp extends ChatRepository {
       chatRemoteDataSource.getMessages(message);
 
   @override
-  Stream<List<ChatEntity>> getMyChat(ChatEntity chat) => getMyChat(chat);
+  Stream<List<ChatEntity>> getMyChat(ChatEntity chat) =>
+      chatRemoteDataSource.getMyChat(chat);
 
   @override
   Future<void> sendMessage(ChatEntity chat, MessageEntity message) =>

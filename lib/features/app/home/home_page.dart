@@ -106,7 +106,13 @@ class _HomePageState extends State<HomePage>
           switchfloatingActionButtonOnTabIndex(_currentTabIndex),
       body: TabBarView(
         controller: _tabController,
-        children: const [ChatPage(), StatusPage(), CallHistoryPage()],
+        children: [
+          ChatPage(
+            uid: widget.uid,
+          ),
+          const StatusPage(),
+          const CallHistoryPage()
+        ],
       ),
     );
   }

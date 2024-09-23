@@ -9,6 +9,7 @@ import 'package:whatsapp_clone/features/chat/domain/usercases/get_my_chat_usecas
 import 'package:whatsapp_clone/features/chat/domain/usercases/send_message_usecase.dart';
 import 'package:whatsapp_clone/features/chat/presentation/cubit/chat/chat_cubit.dart';
 import 'package:whatsapp_clone/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:whatsapp_clone/features/chat/presentation/cubit/rebuild/chat_rebuild_cubit.dart';
 import 'package:whatsapp_clone/main_injection_container.dart';
 
 Future<void> chatInjectionContainer() async {
@@ -19,6 +20,7 @@ Future<void> chatInjectionContainer() async {
       getMessagesUsecase: sl.call(),
       sendMessageUsecase: sl.call(),
       deleteMessageUsecase: sl.call()));
+  sl.registerFactory<ChatRebuildCubit>(() => ChatRebuildCubit());
 //useCases
   sl.registerLazySingleton<DeleteChatUsecase>(
     () => DeleteChatUsecase(chatRepository: sl.call()),
