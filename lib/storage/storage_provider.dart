@@ -22,4 +22,26 @@ class StorageProviderRemoteDataSource {
     onComplete(false);
     return imageUrl;
   }
+
+  static Future<String> uploadMessageFile(
+      {required File file,
+      Function(bool isUploading)? onComplete,
+      String? uid,
+      String? otherUid,
+      String? type}) async {
+    onComplete!(true);
+
+    final ref = _storage.ref().child(
+        "message/$type/$uid/$otherUid/${DateTime.now().millisecondsSinceEpoch}");
+
+    final uploadTask = ref.putData(
+      await file.readAsBytes(),
+      SettableMetadata(contentType: 'image/png'),
+    );
+
+    final imageUrl =
+        (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
+    onComplete(false);
+    return await imageUrl;
+  }
 }

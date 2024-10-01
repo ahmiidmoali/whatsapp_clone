@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
 
 class AttachedWidget extends StatelessWidget {
-  const AttachedWidget({super.key});
+  final void Function()? selectVedio;
+  final void Function()? selectGif;
+  const AttachedWidget({super.key, this.selectVedio, this.selectGif});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
+        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.symmetric(horizontal: 30),
         decoration: const BoxDecoration(
             color: senderMessageColor,
             borderRadius: BorderRadius.all(Radius.circular(10))),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 AttachedIcon(
@@ -34,7 +38,7 @@ class AttachedWidget extends StatelessWidget {
                 )
               ],
             ),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 AttachedIcon(
@@ -57,18 +61,20 @@ class AttachedWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                AttachedIcon(
+                const AttachedIcon(
                   color: Color.fromARGB(255, 11, 146, 16),
                   icon: Icons.poll,
                   text: "Poll",
                 ),
                 AttachedIcon(
-                  color: Color.fromARGB(255, 63, 104, 138),
+                  onTap: selectGif,
+                  color: const Color.fromARGB(255, 63, 104, 138),
                   icon: Icons.gif_box_outlined,
                   text: "Gift",
                 ),
                 AttachedIcon(
-                  color: Color.fromARGB(255, 137, 219, 140),
+                  onTap: selectVedio,
+                  color: const Color.fromARGB(255, 137, 219, 140),
                   icon: Icons.video_camera_back_rounded,
                   text: "Vedio",
                 )

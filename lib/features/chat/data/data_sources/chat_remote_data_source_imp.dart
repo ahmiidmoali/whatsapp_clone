@@ -82,7 +82,7 @@ class ChatRemoteDataSourceImp extends ChatRemoteDataSource {
         (myChatDoc) async {
           if (!myChatDoc.exists) {
             await myChatRef.doc(chat.recipientUid).set(myNewChat);
-            await myChatRef.doc(chat.senderUid).set(otherNewChat);
+            await otherChatRef.doc(chat.senderUid).set(otherNewChat);
             return;
           } else {
             await myChatRef.doc(chat.recipientUid).update(myNewChat);
@@ -170,8 +170,13 @@ class ChatRemoteDataSourceImp extends ChatRemoteDataSource {
         .collection(FirebaseCollectionConst.messages)
         .orderBy("createdAt", descending: false);
 
-    return myMessageRef.snapshots().map((querySnapshots) =>
-        querySnapshots.docs.map((e) => MessageModel.fromSnapshot(e)).toList());
+    return myMessageRef.snapshots().map((querySnapshots) {
+      print(
+          " new messaged recieved on data source ${querySnapshots.docs.length}");
+      return querySnapshots.docs
+          .map((e) => MessageModel.fromSnapshot(e))
+          .toList();
+    });
   }
 
   @override

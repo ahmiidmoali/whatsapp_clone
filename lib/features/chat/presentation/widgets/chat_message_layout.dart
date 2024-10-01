@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:whatsapp_clone/features/app/const/message_type_const.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
+import 'package:whatsapp_clone/features/chat/presentation/widgets/message_widgets/message_type_widget.dart';
 
 class MessageLayout extends StatelessWidget {
   final Color messageBgColor;
@@ -13,6 +15,7 @@ class MessageLayout extends StatelessWidget {
   final bool isShowTick;
   final bool isSeen;
   final VoidCallback? onLongPress;
+  final String? messageType;
   const MessageLayout(
       {super.key,
       required this.messageBgColor,
@@ -22,7 +25,8 @@ class MessageLayout extends StatelessWidget {
       required this.message,
       required this.isShowTick,
       required this.isSeen,
-      required this.onLongPress});
+      required this.onLongPress,
+      required this.messageType});
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +45,13 @@ class MessageLayout extends StatelessWidget {
                     Column(
                       children: [
                         Container(
-                          padding: const EdgeInsets.only(
-                              left: 10, right: 85, top: 3, bottom: 3),
+                          padding: EdgeInsets.only(
+                              left: 10,
+                              right: messageType == MessageTypeConst.textMessage
+                                  ? 85
+                                  : 5,
+                              top: 3,
+                              bottom: 3),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               color: messageBgColor),
@@ -50,11 +59,10 @@ class MessageLayout extends StatelessWidget {
                               maxWidth: MediaQuery.of(context).size.width * .8),
                           child: Column(
                             children: [
-                              Text(
-                                message,
-                                style: const TextStyle(
-                                    fontSize: 18, color: whiteColor),
-                              ),
+                              MessageTypeWidget(
+                                message: message,
+                                type: messageType,
+                              )
                             ],
                           ),
                         ),

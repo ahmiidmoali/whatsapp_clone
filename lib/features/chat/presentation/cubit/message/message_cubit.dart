@@ -23,6 +23,7 @@ class MessageCubit extends Cubit<MessageState> {
       final streamRequest = getMessagesUsecase.call(message);
       streamRequest.listen(
         (messages) {
+          print(" new messaged recieved on cubit${messages.length}");
           emit(MessageLoaded(messages: messages));
         },
       );

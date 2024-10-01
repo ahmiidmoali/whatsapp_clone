@@ -5,11 +5,13 @@ class ChatTextfieldWidget extends StatelessWidget {
   final Function()? onClickAttached;
   final TextEditingController? controller;
   final Function(String)? onChanged;
+  final void Function()? selectImage;
   const ChatTextfieldWidget(
       {super.key,
       required this.onClickAttached,
       required this.controller,
-      required this.onChanged});
+      required this.onChanged,
+      this.selectImage});
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +51,13 @@ class ChatTextfieldWidget extends StatelessWidget {
                   const SizedBox(
                     width: 5,
                   ),
-                  const Icon(
-                    Icons.camera_alt,
-                    size: 20,
-                    color: whiteColor,
+                  GestureDetector(
+                    onTap: selectImage,
+                    child: const Icon(
+                      Icons.camera_alt,
+                      size: 20,
+                      color: whiteColor,
+                    ),
                   ),
                 ],
               ),

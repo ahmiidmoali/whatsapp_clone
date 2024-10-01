@@ -16,7 +16,7 @@ final class MessageLoaded extends MessageState {
 
   const MessageLoaded({required this.messages});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [messages];
 }
 
 final class MessageFailure extends MessageState {}
