@@ -6,28 +6,32 @@ class ChatTextfieldWidget extends StatelessWidget {
   final TextEditingController? controller;
   final Function(String)? onChanged;
   final void Function()? selectImage;
+  final bool isReplaying;
   const ChatTextfieldWidget(
       {super.key,
       required this.onClickAttached,
       required this.controller,
       required this.onChanged,
-      this.selectImage});
+      this.selectImage,
+      required this.isReplaying});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(5),
+      height: 50,
+      margin: EdgeInsets.only(
+          bottom: 5, left: 10, right: 5, top: isReplaying ? 0 : 5),
       child: TextField(
         onChanged: onChanged,
         controller: controller,
         style: const TextStyle(color: whiteColor),
         decoration: InputDecoration(
             filled: true,
-            fillColor: senderMessageColor,
+            fillColor: appBarColor,
             hintText: "Message",
             hintStyle: const TextStyle(color: greyColor),
             contentPadding:
-                const EdgeInsets.symmetric(vertical: 1, horizontal: 15),
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             prefixIcon: const Icon(
               Icons.emoji_emotions,
               size: 20,
@@ -62,8 +66,13 @@ class ChatTextfieldWidget extends StatelessWidget {
                 ],
               ),
             ),
-            border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(40))),
+            border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: isReplaying == true
+                    ? const BorderRadius.only(
+                        bottomLeft: Radius.circular(25),
+                        bottomRight: Radius.circular(25))
+                    : BorderRadius.circular(25))),
       ),
     );
   }

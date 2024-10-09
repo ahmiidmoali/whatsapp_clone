@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:whatsapp_clone/features/chat/domain/entities/chat_entity.dart';
 import 'package:whatsapp_clone/features/chat/domain/entities/message_entity.dart';
+import 'package:whatsapp_clone/features/chat/domain/entities/message_reply_entity.dart';
 import 'package:whatsapp_clone/features/chat/domain/usercases/delete_message_usecase.dart';
 import 'package:whatsapp_clone/features/chat/domain/usercases/get_messages_usecase.dart';
 import 'package:whatsapp_clone/features/chat/domain/usercases/send_message_usecase.dart';
@@ -53,5 +54,11 @@ class MessageCubit extends Cubit<MessageState> {
     } catch (_) {
       emit(MessageFailure());
     }
+  }
+
+  MessageReplayEntity messageReplay = MessageReplayEntity();
+  MessageReplayEntity get getMessageReplay => MessageReplayEntity();
+  set setMessageReplay(MessageReplayEntity messageReplay) {
+    this.messageReplay = messageReplay;
   }
 }

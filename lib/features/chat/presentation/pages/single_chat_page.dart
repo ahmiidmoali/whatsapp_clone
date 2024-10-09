@@ -9,17 +9,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:whatsapp_clone/features/app/const/app_const.dart';
 import 'package:whatsapp_clone/features/app/const/message_type_const.dart';
+import 'package:whatsapp_clone/features/app/global/widgets/dialog_widget.dart';
 import 'package:whatsapp_clone/features/app/global/widgets/show_image_picked_widget.dart';
 import 'package:whatsapp_clone/features/app/global/widgets/show_video_picked_widget.dart';
 import 'package:whatsapp_clone/features/app/theme/style.dart';
 import 'package:whatsapp_clone/features/chat/domain/entities/chat_entity.dart';
 import 'package:whatsapp_clone/features/chat/domain/entities/message_entity.dart';
+import 'package:whatsapp_clone/features/chat/domain/entities/message_reply_entity.dart';
 import 'package:whatsapp_clone/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:whatsapp_clone/features/chat/presentation/cubit/rebuild/chat_rebuild_cubit.dart';
 import 'package:whatsapp_clone/features/chat/presentation/widgets/chat_attached_widget.dart';
 import 'package:whatsapp_clone/features/chat/presentation/widgets/chat_message_layout.dart';
 import 'package:whatsapp_clone/features/chat/presentation/widgets/chat_textfield_widget.dart';
 import 'package:whatsapp_clone/features/chat/presentation/widgets/chat_utiles.dart';
+import 'package:whatsapp_clone/features/chat/presentation/widgets/message_widgets/message_replay_preview_widget.dart';
 import 'package:whatsapp_clone/storage/storage_provider.dart';
 
 class SingleChatPage extends StatefulWidget {
@@ -107,6 +110,16 @@ class _SingleChatPageState extends State<SingleChatPage> {
     super.dispose();
   }
 
+  void onMessageSwipe(
+      {String? message, String? username, String? type, bool? isMe}) {
+    BlocProvider.of<MessageCubit>(context).setMessageReplay =
+        MessageReplayEntity(
+            message: message,
+            username: username,
+            messageType: type,
+            isMe: isMe);
+  }
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback(
@@ -114,6 +127,8 @@ class _SingleChatPageState extends State<SingleChatPage> {
         _scrollToBottom();
       },
     );
+    final provider = BlocProvider.of<MessageCubit>(context);
+    bool _isReplying = provider.messageReplay.message != null;
     return Scaffold(
         appBar: AppBar(
           title: ListTile(
@@ -169,7 +184,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
               print(
                   " new messaged recieved on single chat ${(messages.length)}");
               return Padding(
-                padding: EdgeInsets.all(2)
+                padding: const EdgeInsets.all(2)
                     .copyWith(bottom: MediaQuery.of(context).viewInsets.bottom),
                 child: Stack(
                   children: [
@@ -212,11 +227,40 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                   messageBgColor: messageColor,
                                   alignment: Alignment.centerRight,
                                   createAt: Timestamp.now(),
-                                  onSwipe: () {},
+                                  onSwipe: () {
+                                    onMessageSwipe(
+                                        username: message.senderName,
+                                        message: message.message,
+                                        type: message.messageType,
+                                        isMe: true);
+                                    setState(() {});
+                                  },
                                   message: message.message!,
                                   isShowTick: true,
                                   isSeen: true,
-                                  onLongPress: () {},
+                                  onLongPress: () {
+                                    displayAlertDialog(context, onTap: () {
+                                      BlocProvider.of<MessageCubit>(context)
+                                          .deleteMessage(
+                                              message: MessageEntity(
+                                                  messageId: message.messageId,
+                                                  senderUid:
+                                                      widget.message.senderUid,
+                                                  recipientUid: widget
+                                                      .message.recipientUid));
+                                      Navigator.pop(context);
+                                    },
+                                        confirmTitle: "Delete",
+                                        content:
+                                            "Are you sure about deleting this message?");
+                                  },
+                                  rightPadding:
+                                      message.repliedMessage == "" ? 85 : 5,
+                                  reply: MessageReplayEntity(
+                                      message: message.repliedMessage,
+                                      username: message.repliedTo,
+                                      messageType: message.repliedMessageType),
+                                  recipientName: widget.message.recipientName,
                                 );
                               } else {
                                 return MessageLayout(
@@ -224,11 +268,40 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                   messageBgColor: senderMessageColor,
                                   alignment: Alignment.centerLeft,
                                   createAt: Timestamp.now(),
-                                  onSwipe: () {},
+                                  onSwipe: () {
+                                    onMessageSwipe(
+                                        username: message.senderName,
+                                        message: message.message,
+                                        type: message.messageType,
+                                        isMe: false);
+                                    setState(() {});
+                                  },
                                   message: message.message!,
                                   isShowTick: true,
                                   isSeen: true,
-                                  onLongPress: () {},
+                                  onLongPress: () {
+                                    displayAlertDialog(context, onTap: () {
+                                      BlocProvider.of<MessageCubit>(context)
+                                          .deleteMessage(
+                                              message: MessageEntity(
+                                                  messageId: message.messageId,
+                                                  senderUid:
+                                                      widget.message.senderUid,
+                                                  recipientUid: widget
+                                                      .message.recipientUid));
+                                      Navigator.pop(context);
+                                    },
+                                        confirmTitle: "Delete",
+                                        content:
+                                            "Are you sure about deleting this message?");
+                                  },
+                                  rightPadding:
+                                      message.repliedMessage == "" ? 85 : 5,
+                                  reply: MessageReplayEntity(
+                                      message: message.repliedMessage,
+                                      username: message.repliedTo,
+                                      messageType: message.repliedMessageType),
+                                  recipientName: widget.message.recipientName,
                                 );
                               }
                             },
@@ -283,12 +356,36 @@ class _SingleChatPageState extends State<SingleChatPage> {
                             }
                           },
                         ),
+                        _isReplying == true
+                            ? const SizedBox(
+                                height: 5,
+                              )
+                            : const SizedBox(
+                                height: 0,
+                              ),
+                        _isReplying == true
+                            ? Row(
+                                children: [
+                                  Expanded(child: MessageReplayPreviewWidget(
+                                    onCancelReplayListener: () {
+                                      provider.setMessageReplay =
+                                          MessageReplayEntity();
+                                      setState(() {});
+                                    },
+                                  )),
+                                  Container(
+                                    width: 50,
+                                  )
+                                ],
+                              )
+                            : Container(),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             // ChatTextfieldWidget--------------------------------------
                             Expanded(
                                 child: ChatTextfieldWidget(
+                              isReplaying: _isReplying,
                               selectImage: () {
                                 selectImage().then(
                                   (value) {
@@ -336,8 +433,8 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                   margin:
                                       const EdgeInsets.symmetric(horizontal: 3),
                                   decoration: const BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(40)),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(605)),
                                       color: tabColor),
                                   child: IconButton(
                                       onPressed: () {
@@ -396,8 +493,25 @@ class _SingleChatPageState extends State<SingleChatPage> {
   }
 
   void _sendTextMessage() async {
-    _sendMessage(
-        message: messageController.text, type: MessageTypeConst.textMessage);
+    final provider = BlocProvider.of<MessageCubit>(context);
+    if (_isDisplaySendButton) {
+      if (provider.messageReplay.message != null) {
+        _sendMessage(
+            repliedMessage: provider.messageReplay.message,
+            repliedMessageType: provider.messageReplay.messageType,
+            repliedTo: provider.messageReplay.username,
+            message: messageController.text,
+            type: MessageTypeConst.textMessage);
+      } else {
+        _sendMessage(
+            message: messageController.text,
+            type: MessageTypeConst.textMessage);
+      }
+      provider.setMessageReplay = MessageReplayEntity();
+      setState(() {
+        messageController.clear();
+      });
+    }
   }
 //     //TODO : ----recording ---
 
